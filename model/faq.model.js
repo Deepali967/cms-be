@@ -1,0 +1,73 @@
+const db = require("../schema/FAQ.schema");
+
+exports.create = function (req, res) {
+  db.find(req.body, {}).then((data) => {
+    console.log(data);
+
+    if (!data.length) {
+      const faq = new db(req.body);
+
+      faq
+        .save()
+        .then((data) => {
+          res.status(200).json({ message: "success" });
+        })
+        .catch((err) => {
+          console.log("error", err);
+          res.json({ message: err._message });
+        });
+    } else {
+      res.status(412).json({ message: "Already exists" });
+    }
+  });
+};
+
+exports.findAll = function (req, res) {
+  db.find()
+    .then((data) => {
+      res.status(200).json({ data });
+    })
+    .catch((err) => {
+      res.status(400).json({ message: "Error" });
+    });
+};
+
+exports.findAOne = function (req, res) {
+  db.findOne({ _id: req.params.id }, {})
+    .then((data) => {
+      res.status(200).json({ data });
+    })
+    .catch((err) => {
+      res.status(400).json({ message: "Error" });
+    });
+};
+
+exports.update = function (req, res) {
+  console.log(req.params);
+
+  db.findByIdAndUpdate(req.params.id, req.body)
+    .then((data) => {
+      if (!data) {
+        res.status(404).json({ message: "Could not found any data with id" });
+      }
+
+      res.status(200).json({ data });
+    })
+    .catch((err) => {
+      res.status(400).json({ message: "Error" });
+    });
+};
+
+exports.delete = function (req, res) {
+  db.findByIdAndDelete(req.params.id)
+    .then((data) => {
+      if (!data) {
+        res.status(404).json({ message: "Could not found any data with id" });
+      }
+
+      res.status(200).json({ message: "record deleted successfully" });
+    })
+    .catch((err) => {
+      res.status(400).json({ message: "Error" });
+    });
+};
