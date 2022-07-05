@@ -1,6 +1,12 @@
 const db = require("../schema/FAQ.schema");
 
 exports.create = function (req, res) {
+  if (!Object.keys(req.body).length) {
+    res
+      .status(412)
+      .json({ message: "Please enter valid values for required fields" });
+  }
+
   db.find(req.body, {}).then((data) => {
     console.log(data);
 
@@ -10,14 +16,14 @@ exports.create = function (req, res) {
       faq
         .save()
         .then((data) => {
-          res.status(200).json({ message: "success" });
+          res.status(200).json({ message: "Added data Successfully" });
         })
         .catch((err) => {
           console.log("error", err);
           res.json({ message: err._message });
         });
     } else {
-      res.status(412).json({ message: "Already exists" });
+      res.status(500).json({ message: "Record Already Exists" });
     }
   });
 };
@@ -38,7 +44,9 @@ exports.findAOne = function (req, res) {
       res.status(200).json({ data });
     })
     .catch((err) => {
-      res.status(400).json({ message: "Error" });
+      res
+        .status(400)
+        .json({ message: "Could not Find record with Requested ID" });
     });
 };
 
@@ -51,7 +59,7 @@ exports.update = function (req, res) {
         res.status(404).json({ message: "Could not found any data with id" });
       }
 
-      res.status(200).json({ data });
+      res.status(200).json({ message: "Updated Record Successfully" });
     })
     .catch((err) => {
       res.status(400).json({ message: "Error" });

@@ -1,6 +1,12 @@
 const db = require("../schema/help.schema");
 
 exports.create = function (req, res) {
+  if (!Object.keys(req.body).length) {
+    res
+      .status(412)
+      .json({ message: "Please enter valid values for required fields" });
+  }
+
   db.find(req.body, {}).then((data) => {
     if (!data.length) {
       const helparticle = new db(req.body);
@@ -14,7 +20,7 @@ exports.create = function (req, res) {
           res.json({ message: err._message });
         });
     } else {
-      res.status(412).json({ message: "Already exists" });
+      res.status(412).json({ message: "Record Already Exists" });
     }
   });
 };
@@ -35,7 +41,9 @@ exports.findAOne = function (req, res) {
       res.status(200).json({ data });
     })
     .catch((err) => {
-      res.status(400).json({ message: "Error" });
+      res
+        .status(400)
+        .json({ message: "Could not Find record with Requested ID" });
     });
 };
 
